@@ -20,8 +20,21 @@ Semestre: 2026/1
 - [@yurikomuta](https://github.com/yurikomuta)
 
 
+https://docs.google.com/document/d/1hZ7UtmppR4Gos6SaVSCrl67EO6zNeGfn22Zbd7bb3io/edit?usp=sharing
 
+Requisitos não funcionais:
+https://docs.google.com/document/d/1YgpqtNfmlq65XDOZqISKW9IT_oboYbW7Sd-Olz5PZZI/edit?usp=sharing
 ### Documentação
+[Requisitos Funcionais](https://docs.google.com/document/d/1hZ7UtmppR4Gos6SaVSCrl67EO6zNeGfn22Zbd7bb3io/edit?usp=sharing
+)
+
+[Requisitos não Funcionais](https://docs.google.com/document/d/1YgpqtNfmlq65XDOZqISKW9IT_oboYbW7Sd-Olz5PZZI/edit?usp=sharing
+)
+
+[TAP](https://github.com/EdvanOAlves/tcc-repositorio-central/wiki)
+
+[Protótipo de Alta Fidelidade](https://www.figma.com/design/Fmi8DgDYtJuF4qEb2TakfD/Escopo?node-id=167-1702&t=MbOSVA4wONqRZvTh-1)
+
 
 ├── 📂 docs              
 │   └── 📄 proposta.pptx    
