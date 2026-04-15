@@ -1,0 +1,764 @@
+openapi: '3.0.3'
+info:
+  title: Escopo - Trabalho de Conclusão de Curso SENAI
+  version: '1.0'
+  description: Documentação das rotas da API do projeto Escopo.
+
+servers:
+  - url: http://localhost:8080
+
+components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+
+    Usuario:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        nome:
+          type: string
+          example: Nathan
+        email:
+          type: string
+          example: nathan@email.com
+
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          example: jwt-token
+        usuario:
+          $ref: '#/components/schemas/Usuario'
+
+    Erro:
+      type: object
+      properties:
+        codigo:
+          type: integer
+        status:
+          type: string
+        mensagem:
+          type: string
+        rota:
+          type: string
+        data_hora:
+          type: string
+
+    ErroCampos:
+      type: object
+      properties:
+        codigo:
+          type: integer
+        status:
+          type: string
+        erros:
+          type: array
+          items:
+            type: object
+            properties:
+              campo:
+                type: string
+              mensagem:
+                type: string
+        rota:
+          type: string
+        data_hora:
+          type: string
+
+    PaginaDoDashboard:
+      type: object
+      properties:
+        projeto:
+          type: string
+          example: Meu Projeto
+        categoria:
+          type: string
+          example: Documentação
+        pagina:
+          type: string
+          example: Página Inicial
+
+    ConviteDoDashboard:
+      type: object
+      properties:
+        titulo:
+          type: string
+          example: Convite para revisão
+        descricao:
+          type: string
+          example: Revisar o novo módulo de autenticação
+        data:
+          type: string
+          format: date
+          example: '2026-04-14'
+
+    Dashboard:
+      type: object
+      properties:
+        paginas:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaginaDoDashboard'
+        convites:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConviteDoDashboard'
+    IntegranteProjeto:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        nivel_acesso_id:
+          type: integer
+          example: 2
+
+    UsuarioList:
+      type: object
+      properties:
+        nome:
+          type: string
+          example: Nathan
+        email:
+          type: string
+          example: nathan@email.com
+        foto_perfil:
+          type: string
+          example: https://example.com/image.jpg
+
+    ProjetoList:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        titulo:
+          type: string
+          example: Meu Projeto
+        descricao:
+          type: string
+          example: Descrição do projeto
+        foto_usuarios:
+          type: array
+          items:
+            type: string
+          example: ["https://example.com/image1.jpg", "https://example.com/image2.jpg"]
+
+    ProjetoDetail:
+      type: object
+      properties:
+        titulo:
+          type: string
+          example: Meu Projeto
+        descricao:
+          type: string
+          example: Descrição do projeto
+        status:
+          type: boolean
+          example: true
+        data_criacao:
+          type: string
+          format: date-time
+          example: '2026-04-14T10:00:00Z'
+        ultima_atualizacao:
+          type: string
+          format: date-time
+          example: '2026-04-14T12:00:00Z'
+        nome_responsavel:
+          type: string
+          example: Nathan
+
+    Registro:
+      type: object
+      properties:
+        titulo:
+          type: string
+          example: Registro de Reunião
+        conteudo:
+          type: string
+          example: Conteúdo do registro
+        criado_em:
+          type: string
+          format: date-time
+          example: '2026-04-14T10:00:00Z'
+
+    Documento:
+      type: object
+      properties:
+        titulo:
+          type: string
+          example: Documento de Requisitos
+        quantidade_versoes:
+          type: integer
+          example: 3
+        ultima_alteracao:
+          type: string
+          format: date
+          example: '2026-04-14'
+
+    CategoriaDocumentacao:
+      type: object
+      properties:
+        nome:
+          type: string
+          example: Requisitos
+        documentos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Documento'
+
+    Reuniao:
+      type: object
+      properties:
+        titulo:
+          type: string
+          example: Reunião de Planejamento
+        criado_em:
+          type: string
+          format: date-time
+          example: '2026-04-14T10:00:00Z'
+        foto_perfil:
+          type: array
+          items:
+            type: string
+          example: ["https://example.com/image1.jpg", "https://example.com/image2.jpg"]
+
+    ProjetoRequest:
+      type: object
+      required:
+        - titulo
+      properties:
+        titulo:
+          type: string
+          example: Meu Projeto
+          minLength: 1
+          maxLength: 100
+        descricao:
+          type: string
+          example: Descrição do projeto
+        integrantes:
+          type: array
+          items:
+            $ref: '#/components/schemas/IntegranteProjeto'
+paths:
+
+  /api/v1/cadastrar:
+    post:
+      tags:
+        - Autenticação
+      summary: Cadastra um usuário
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nome
+                - email
+                - senha
+              properties:
+                nome:
+                  type: string
+                  example: Nathan
+                  maxLength: 100
+                  minLength: 1
+                email:
+                  type: string
+                  example: nathan@email.com
+                  maxLength: 150
+                  minLength: 3
+                senha:
+                  type: string
+                  example: 12345678
+                  maxLength: 64
+                  minLength: 8
+
+
+      responses:
+        '201':
+          description: Usuário criado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+
+        '409':
+          description: Usuário já existe
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+
+        '422':
+          description: Campos inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroCampos'
+
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+
+  /api/v1/login:
+    post:
+      tags:
+        - Autenticação
+      summary: Autentica um usuário
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - senha
+              properties:
+                email:
+                  type: string
+                  example: nathan@email.com
+                  maxLength: 150
+                  minLength: 3
+                senha:
+                  type: string
+                  example: 123456
+                  maxLength: 64
+                  minLength: 8
+
+      responses:
+        '200':
+          description: Login realizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+
+        '401':
+          description: Credenciais inválidas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+
+        '422':
+          description: Campos inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroCampos'
+
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+
+  /api/v1/dashboard:
+    get:
+      tags:
+        - Dashboard
+      summary: Retorna dados do dashboard
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dashboard'
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+
+  /api/v1/usuario/nome:
+    patch:
+      tags:
+        - Usuário
+      summary: Atualiza o nome do usuário autenticado
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nome
+              properties:
+                nome:
+                  type: string
+                  example: Nathan
+                  minLength: 1
+                  maxLength: 100
+      responses:
+        '204':
+          description: Nome alterado
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '403':
+          description: Apenas o respectivo usuário pode alterar a própria
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '422':
+          description: Nome inválido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroCampos'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+
+  /api/v1/usuario:
+    delete:
+      tags:
+        - Usuário
+      summary: Exclui o usuário autenticado
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Usuário excluído
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+  /api/v1/usuarios:
+    get:
+      tags:
+        - Usuário
+      summary: Lista usuários, opcionalmente filtrados por email
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: email
+          in: query
+          schema:
+            type: string
+          description: Filtrar usuários que contenham este email
+      responses:
+        '200':
+          description: Lista de usuários retornada
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UsuarioList'
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+
+  /api/v1/projeto:
+    post:
+      tags:
+        - Projeto
+      summary: Cria um novo projeto
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjetoRequest'
+      responses:
+        '201':
+          description: Projeto criado
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Algum integrante inexistente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '422':
+          description: Campos inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroCampos'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+
+  /api/v1/projetos:
+    get:
+      tags:
+        - Projeto
+      summary: Lista todos os projetos
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProjetoList'
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+
+  /api/v1/projeto/{id}:
+    get:
+      tags:
+        - Projeto
+      summary: Retorna detalhes de um projeto específico
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do projeto
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjetoDetail'
+        '400':
+          description: ID inválido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Projeto não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+
+  /api/v1/projeto/{id}/registros:
+    get:
+      tags:
+        - Projeto
+      summary: Lista registros de um projeto específico
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do projeto
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Registro'
+        '400':
+          description: ID do projeto inválido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '401':
+          description: Não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Projeto com o ID informado não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+
+  /api/v1/projeto/{id}/documentacao:
+    get:
+      tags:
+        - Projeto
+      summary: Lista documentação de um projeto específico
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do projeto
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CategoriaDocumentacao'
+        '400':
+          description: ID do projeto inválido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '401':
+          description: Não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Projeto com o ID informado não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+
+  /api/v1/projeto/{id}/reunioes:
+    get:
+      tags:
+        - Projeto
+      summary: Lista reuniões de um projeto específico
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do projeto
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Reuniao'
+        '400':
+          description: ID do projeto inválido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '401':
+          description: Não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Projeto com o ID informado não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
