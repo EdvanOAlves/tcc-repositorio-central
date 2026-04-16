@@ -74,22 +74,28 @@ components:
         data_hora:
           type: string
 
-    PaginaDoDashboard:
+    DocumentoDoDashboard:
       type: object
       properties:
+        id:
+          type: number
+          example: 1
         projeto:
           type: string
           example: Meu Projeto
         categoria:
           type: string
           example: Documentação
-        pagina:
+        documento:
           type: string
           example: Página Inicial
 
     ConviteDoDashboard:
       type: object
       properties:
+        id:
+          type: number
+          example: 1
         titulo:
           type: string
           example: Convite para revisão
@@ -104,10 +110,10 @@ components:
     Dashboard:
       type: object
       properties:
-        paginas:
+        documentos:
           type: array
           items:
-            $ref: '#/components/schemas/PaginaDoDashboard'
+            $ref: '#/components/schemas/DocumentoDoDashboard'
         convites:
           type: array
           items:
@@ -125,6 +131,9 @@ components:
     UsuarioList:
       type: object
       properties:
+        id:
+          type: number
+          example: 1
         nome:
           type: string
           example: Nathan
@@ -156,6 +165,9 @@ components:
     ProjetoDetail:
       type: object
       properties:
+        id:
+          type: integer
+          example: 1
         titulo:
           type: string
           example: Meu Projeto
@@ -180,12 +192,19 @@ components:
     Registro:
       type: object
       properties:
+        id:
+          type: number
+          example: 1
         titulo:
           type: string
           example: Registro de Reunião
         conteudo:
           type: string
           example: Conteúdo do registro
+        atualizado_em:
+          type: string
+          format: date-time
+          example: '2026-04-14T10:00:00Z'
         criado_em:
           type: string
           format: date-time
@@ -194,6 +213,9 @@ components:
     Documento:
       type: object
       properties:
+        id:
+          type: number
+          example: 1
         titulo:
           type: string
           example: Documento de Requisitos
@@ -208,6 +230,9 @@ components:
     CategoriaDocumentacao:
       type: object
       properties:
+        id:
+          type: number
+          example: 1
         nome:
           type: string
           example: Requisitos
@@ -226,11 +251,123 @@ components:
           type: string
           format: date-time
           example: '2026-04-14T10:00:00Z'
-        foto_perfil:
+        foto_usuarios:
           type: array
           items:
             type: string
           example: ["https://example.com/image1.jpg", "https://example.com/image2.jpg"]
+
+    ReuniaoResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        titulo:
+          type: string
+          example: Reunião de Planejamento
+
+    Link:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        url:
+          type: string
+          example: https://example.com/link
+        nome:
+          type: string
+          example: Link da Reunião
+        tipo_link:
+          type: string
+          example: reuniao
+
+    Convidado:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        nome:
+          type: string
+          example: João Silva
+        cargo:
+          type: string
+          example: Desenvolvedor
+
+    UsuarioReuniao:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        nome:
+          type: string
+          example: Nathan
+        cargo:
+          type: string
+          example: Gerente
+        foto_perfil:
+          type: string
+          example: https://example.com/image.jpg
+
+    ReuniaoDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        titulo:
+          type: string
+          example: Reunião de Planejamento
+        criado_em:
+          type: string
+          format: date-time
+          example: '2026-04-14T10:00:00Z'
+        projeto_id:
+          type: integer
+          example: 1
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
+        convidados:
+          type: array
+          items:
+            $ref: '#/components/schemas/Convidado'
+        usuarios:
+          type: array
+          items:
+            $ref: '#/components/schemas/UsuarioReuniao'
+
+    HistoricoVersaoDocumento:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        criado_em:
+          type: string
+          format: date-time
+          example: '2026-04-14T10:00:00Z'
+
+    VersaoDocumento:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        titulo:
+          type: string
+          example: Documento de Requisitos
+        conteudo:
+          type: string
+          example: Conteúdo da versão do documento
+        criado_em:
+          type: string
+          format: date-time
+          example: '2026-04-14T10:00:00Z'
 
     ProjetoRequest:
       type: object
@@ -300,6 +437,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/Erro'
 
+        '400':
+          description: Requisição mal formulada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+
         '422':
           description: Campos inválidos
           content:
@@ -351,6 +495,13 @@ paths:
 
         '401':
           description: Credenciais inválidas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+
+        '400':
+          description: Requisição mal formulada
           content:
             application/json:
               schema:
@@ -427,8 +578,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
-        '403':
-          description: Apenas o respectivo usuário pode alterar a própria
+        '400':
+          description: Requisição mal formulada
           content:
             application/json:
               schema:
@@ -462,6 +613,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
+        '404':
+          description: Usuário não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
         '500':
           description: Erro interno do servidor
           content:
@@ -472,15 +629,18 @@ paths:
     get:
       tags:
         - Usuário
-      summary: Lista usuários, opcionalmente filtrados por email
+      summary: Lista 5 usuários que contenham em alguma parte do email a query
       security:
         - bearerAuth: []
       parameters:
         - name: email
           in: query
+          required: true
           schema:
             type: string
-          description: Filtrar usuários que contenham este email
+            minLength: 3
+            maxLength: 150
+          description: Filtrar usuários que contenham no email esse conteúdo
       responses:
         '200':
           description: Lista de usuários retornada
@@ -525,8 +685,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
+        '400':
+          description: Requisição mal formulada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
         '404':
-          description: Algum integrante inexistente
+          description: Integrante ou nível de acesso inexistente
           content:
             application/json:
               schema:
@@ -595,13 +761,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/ProjetoDetail'
         '400':
-          description: ID inválido
+          description: Requisição mal formulada
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
         '401':
           description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '403':
+          description: Não possui permissão para acessar esse recurso
           content:
             application/json:
               schema:
@@ -618,11 +790,69 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
+    put:
+      tags:
+        - Projeto
+      summary: Atualiza um projeto
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do projeto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjetoRequest'
+      responses:
+        '204':
+          description: Projeto atualizado
+        '400':
+          description: Requisição mal formulada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '403':
+          description: Não possui permissão para acessar esse recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Projeto não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '422':
+          description: Campos inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroCampos'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
 
   /api/v1/projeto/{id}/registros:
     get:
       tags:
-        - Projeto
+        - Registro
       summary: Lista registros de um projeto específico
       security:
         - bearerAuth: []
@@ -643,13 +873,19 @@ paths:
                 items:
                   $ref: '#/components/schemas/Registro'
         '400':
-          description: ID do projeto inválido
+          description: Requisição mal formulada
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
         '401':
-          description: Não autorizado
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '403':
+          description: Não possui permissão para acessar esse recurso
           content:
             application/json:
               schema:
@@ -670,7 +906,7 @@ paths:
   /api/v1/projeto/{id}/documentacao:
     get:
       tags:
-        - Projeto
+        - Documento
       summary: Lista documentação de um projeto específico
       security:
         - bearerAuth: []
@@ -691,13 +927,19 @@ paths:
                 items:
                   $ref: '#/components/schemas/CategoriaDocumentacao'
         '400':
-          description: ID do projeto inválido
+          description: Requisição mal formulada
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
         '401':
-          description: Não autorizado
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '403':
+          description: Não possui permissão para acessar esse recurso
           content:
             application/json:
               schema:
@@ -718,7 +960,7 @@ paths:
   /api/v1/projeto/{id}/reunioes:
     get:
       tags:
-        - Projeto
+        - Reunião
       summary: Lista reuniões de um projeto específico
       security:
         - bearerAuth: []
@@ -739,13 +981,19 @@ paths:
                 items:
                   $ref: '#/components/schemas/Reuniao'
         '400':
-          description: ID do projeto inválido
+          description: Requisição mal formulada
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
         '401':
-          description: Não autorizado
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '403':
+          description: Não possui permissão para acessar esse recurso
           content:
             application/json:
               schema:
@@ -762,3 +1010,1407 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Erro'
+
+  /api/v1/projeto/{id}/reuniao:
+    post:
+      tags:
+        - Reunião
+      summary: Cria uma reunião em um projeto
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do projeto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - titulo
+              properties:
+                titulo:
+                  type: string
+                  example: Reunião de Planejamento
+                  minLength: 1
+                  maxLength: 150
+      responses:
+        '201':
+          description: Reunião criada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReuniaoResponse'
+        '400':
+          description: Requisição mal formulada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '403':
+          description: Não possui permissão para acessar esse recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Projeto com o ID informado não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '422':
+          description: Campos inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroCampos'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+
+  /api/v1/projeto/{id}/reuniao/{reuniao_id}/titulo:
+    patch:
+      tags:
+        - Reunião
+      summary: Atualiza o título de uma reunião
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do projeto
+        - name: reuniao_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID da reunião
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - titulo
+              properties:
+                titulo:
+                  type: string
+                  example: Reunião de Planejamento
+                  minLength: 1
+                  maxLength: 150
+      responses:
+        '204':
+          description: Título atualizado
+        '400':
+          description: Requisição mal formulada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '403':
+          description: Não possui permissão para acessar esse recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Projeto ou reunião não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '422':
+          description: Campos inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroCampos'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+
+  /api/v1/projeto/{id}/reuniao/{reuniao_id}:
+    get:
+      tags:
+        - Reunião
+      summary: Retorna detalhes de uma reunião específica
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do projeto
+        - name: reuniao_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID da reunião
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReuniaoDetail'
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '403':
+          description: Não possui permissão para acessar esse recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Projeto ou reunião não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+
+  /api/v1/projeto/{id}/reuniao/{reuniao_id}/link-gravacao:
+    patch:
+      tags:
+        - Reunião
+      summary: Atualiza o link de gravação de uma reunião
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do projeto
+        - name: reuniao_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID da reunião
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nome
+                - url
+              properties:
+                nome:
+                  type: string
+                  example: Gravação da Reunião
+                  minLength: 1
+                  maxLength: 50
+                url:
+                  type: string
+                  example: https://example.com/recording
+                  minLength: 1
+                  maxLength: 500
+      responses:
+        '204':
+          description: Link de gravação atualizado
+        '400':
+          description: Requisição mal formulada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '403':
+          description: Não possui permissão para acessar esse recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Projeto ou reunião não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '422':
+          description: Campos inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroCampos'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+  /api/v1/projeto/{id}/reuniao/{reuniao_id}/link-adicional/{link_adicional_id}:
+    delete:
+      tags:
+        - Reunião
+      summary: Remove um link adicional de reunião
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do projeto
+        - name: reuniao_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID da reunião
+        - name: link_adicional_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do link adicional
+      responses:
+        '204':
+          description: Link adicional excluído
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '403':
+          description: Não possui permissão para acessar esse recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Projeto, reunião ou link adicional não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+  /api/v1/projeto/{id}/reuniao/{reuniao_id}/convidado:
+    post:
+      tags:
+        - Reunião
+      summary: Adiciona um convidado a uma reunião
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do projeto
+        - name: reuniao_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID da reunião
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nome
+              properties:
+                nome:
+                  type: string
+                  example: João Silva
+                  minLength: 1
+                  maxLength: 100
+                cargo:
+                  type: string
+                  example: Desenvolvedor
+                  maxLength: 100
+      responses:
+        '201':
+          description: Convidado adicionado
+        '400':
+          description: Requisição mal formulada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '403':
+          description: Não possui permissão para acessar esse recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Projeto ou reunião não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '422':
+          description: Campos inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroCampos'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+  /api/v1/projeto/{id}/reuniao/{reuniao_id}/usuario:
+    post:
+      tags:
+        - Reunião
+      summary: Adiciona um usuário a uma reunião
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do projeto
+        - name: reuniao_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID da reunião
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - usuario_id
+              properties:
+                usuario_id:
+                  type: integer
+                  example: 1
+      responses:
+        '201':
+          description: Usuário adicionado
+        '400':
+          description: Requisição mal formulada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '403':
+          description: Não possui permissão para acessar esse recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Projeto, reunião ou usuário não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '422':
+          description: Campos inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroCampos'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+  /api/v1/projeto/{id}/registro:
+    post:
+      tags:
+        - Registro
+      summary: Cria um registro em um projeto
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do projeto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - titulo
+                - conteudo
+              properties:
+                titulo:
+                  type: string
+                  example: Registro de Reunião
+                  minLength: 1
+                  maxLength: 150
+                conteudo:
+                  type: string
+                  example: Conteúdo do registro
+                  minLength: 1
+      responses:
+        '201':
+          description: Registro criado
+        '400':
+          description: Requisição mal formulada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '403':
+          description: Não possui permissão para acessar esse recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Projeto não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '422':
+          description: Campos inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroCampos'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+  /api/v1/projeto/{id}/registro/{registro_id}/titulo:
+    patch:
+      tags:
+        - Registro
+      summary: Atualiza o título de um registro
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do projeto
+        - name: registro_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do registro
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - titulo
+              properties:
+                titulo:
+                  type: string
+                  example: Registro de Reunião Atualizado
+                  minLength: 1
+                  maxLength: 150
+      responses:
+        '204':
+          description: Título atualizado
+        '400':
+          description: Requisição mal formulada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '403':
+          description: Não possui permissão para acessar esse recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Projeto ou registro não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '422':
+          description: Campos inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroCampos'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+  /api/v1/projeto/{id}/registro/{registro_id}/conteudo:
+    patch:
+      tags:
+        - Registro
+      summary: Atualiza o conteúdo de um registro
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do projeto
+        - name: registro_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do registro
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - conteudo
+              properties:
+                conteudo:
+                  type: string
+                  example: Conteúdo do registro atualizado
+                  minLength: 1
+      responses:
+        '204':
+          description: Conteúdo atualizado
+        '400':
+          description: Requisição mal formulada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '403':
+          description: Não possui permissão para acessar esse recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Projeto ou registro não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '422':
+          description: Campos inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroCampos'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+  /api/v1/projeto/{id}/registro/{registro_id}:
+    get:
+      tags:
+        - Registro
+      summary: Retorna detalhes de um registro específico
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do projeto
+        - name: registro_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do registro
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Registro'
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '403':
+          description: Não possui permissão para acessar esse recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Projeto ou registro não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+    delete:
+      tags:
+        - Registro
+      summary: Deleta um registro
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do projeto
+        - name: registro_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do registro
+      responses:
+        '204':
+          description: Registro excluído
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '403':
+          description: Não possui permissão para acessar esse recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Projeto ou registro não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+  /api/v1/projeto/{id}/categoria:
+    post:
+      tags:
+        - Categoria
+      summary: Cria uma categoria de documentação em um projeto
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do projeto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - titulo
+              properties:
+                titulo:
+                  type: string
+                  example: Requisitos
+                  minLength: 1
+                  maxLength: 100
+      responses:
+        '201':
+          description: Categoria criada
+        '400':
+          description: Requisição mal formulada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '403':
+          description: Não possui permissão para acessar esse recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Projeto não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '422':
+          description: Campos inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroCampos'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+  /api/v1/projeto/{id}/categoria/{categoria_id}:
+    delete:
+      tags:
+        - Categoria
+      summary: Deleta uma categoria
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do projeto
+        - name: categoria_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID da categoria
+      responses:
+        '204':
+          description: Categoria excluída
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '403':
+          description: Não possui permissão para acessar esse recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Projeto ou categoria não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+  /api/v1/projeto/{id}/categoria/{categoria_id}/documento:
+    post:
+      tags:
+        - Documento
+      summary: Cria um documento em uma categoria
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do projeto
+        - name: categoria_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID da categoria
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - titulo
+                - conteudo
+              properties:
+                titulo:
+                  type: string
+                  example: Documento de Requisitos
+                  minLength: 1
+                  maxLength: 150
+                conteudo:
+                  type: string
+                  example: Conteúdo do documento
+      responses:
+        '201':
+          description: Documento criado
+        '400':
+          description: Requisição mal formulada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '403':
+          description: Não possui permissão para acessar esse recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Projeto ou categoria não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '422':
+          description: Campos inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroCampos'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+  /api/v1/projeto/{id}/categoria/{categoria_id}/documento/{documento_id}:
+    get:
+      tags:
+        - Documento
+      summary: Retorna detalhes de um documento específico
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do projeto
+        - name: categoria_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID da categoria
+        - name: documento_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do documento
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  titulo:
+                    type: string
+                    example: Documento de Requisitos
+                  conteudo:
+                    type: string
+                    example: Conteúdo do documento
+                  ultima_alteracao:
+                    type: string
+                    format: date
+                    example: '2026-04-14'
+                  projeto:
+                    type: string
+                    example: Meu Projeto
+                  categoria:
+                    type: string
+                    example: Requisitos
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '403':
+          description: Não possui permissão para acessar esse recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Projeto, categoria ou documento não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+    delete:
+      tags:
+        - Documento
+      summary: Deleta um documento
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do projeto
+        - name: categoria_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID da categoria
+        - name: documento_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do documento
+      responses:
+        '204':
+          description: Documento excluído
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '403':
+          description: Não possui permissão para acessar esse recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Projeto, categoria ou documento não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+  /api/v1/projeto/{id}/categoria/{categoria_id}/documento/{documento_id}/titulo:
+    patch:
+      tags:
+        - Documento
+      summary: Atualiza o título de um documento
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do projeto
+        - name: categoria_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID da categoria
+        - name: documento_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do documento
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - titulo
+              properties:
+                titulo:
+                  type: string
+                  example: Documento de Requisitos Atualizado
+                  minLength: 1
+                  maxLength: 150
+      responses:
+        '204':
+          description: Título atualizado
+        '400':
+          description: Requisição mal formulada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '403':
+          description: Não possui permissão para acessar esse recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Projeto, categoria ou documento não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '422':
+          description: Campos inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroCampos'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+  /api/v1/projeto/{id}/categoria/{categoria_id}/documento/{documento_id}/conteudo:
+    patch:
+      tags:
+        - Documento
+      summary: Atualiza o conteúdo de um documento
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do projeto
+        - name: categoria_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID da categoria
+        - name: documento_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do documento
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - conteudo
+              properties:
+                conteudo:
+                  type: string
+                  example: Conteúdo do documento atualizado
+                  minLength: 1
+      responses:
+        '204':
+          description: Conteúdo atualizado
+        '400':
+          description: Requisição mal formulada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '403':
+          description: Não possui permissão para acessar esse recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Projeto, categoria ou documento não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '422':
+          description: Campos inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroCampos'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+  /api/v1/projeto/{id}/categoria/{categoria_id}/documento/{documento_id}/historico:
+    get:
+      tags:
+        - Documento
+      summary: Retorna o histórico de versões de um documento
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do projeto
+        - name: categoria_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID da categoria
+        - name: documento_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do documento
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HistoricoVersaoDocumento'
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '403':
+          description: Não possui permissão para acessar esse recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Projeto, categoria ou documento não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+
+  /api/v1/projeto/{id}/categoria/{categoria_id}/documento/{documento_id}/historico/{versao_id}:
+    get:
+      tags:
+        - Documento
+      summary: Retorna o conteúdo de uma versão específica de um documento
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do projeto
+        - name: categoria_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID da categoria
+        - name: documento_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do documento
+        - name: versao_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID da versão
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VersaoDocumento'
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '403':
+          description: Não possui permissão para acessar esse recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Projeto, categoria, documento ou versão não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+
+  /api/v1/projeto/{id}/reuniao/{reuniao_id}/link-adicional:
+    post:
+      tags:
+        - Reunião
+      summary: ???FAZER ESSA ROTA DE POST DO LINK ADICIONAL???
+      security:
+        - bearerAuth: []
+      responses:
+        '201':
+          description: criado
